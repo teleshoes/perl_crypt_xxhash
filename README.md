@@ -87,6 +87,25 @@ sub hash_a_file {
 } # the resources $stream occupied will be released here.
 ```
 
+##### $stream = xxhash3_64bits_stream($seed)
+##### xxhash3_64bits_stream_update($stream, $more_data)
+##### $h = xxhash3_64bits_stream_digest($stream)
+##### $h = xxhash3_64bits_stream_digest_hex($stream)
+
+Get an xxh3 64-bit hash from segmented data by calling xxhash3_64bits_stream_update multiple times.
+
+```perl
+sub hash_a_file {
+    my($fh) = @_;
+    my $stream = xxhash3_64bits_stream(12345);
+    my $buf;
+    while( read $fh, $buf, 1024 ) {
+        xxhash3_64bits_stream_update($stream, $buf);
+    }
+    return xxhash3_64bits_stream_digest($stream);
+    # return xxhash3_64bits_stream_digest_hex($stream); # hex version
+} # the resources $stream occupied will be released here.
+```
 ### SPEED
 
 There are some official benchmark results can be found on the project

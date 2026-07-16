@@ -18,6 +18,10 @@ our @EXPORT_OK = qw[
     xxhash64_stream_update
     xxhash64_stream_digest
     xxhash64_stream_digest_hex
+    xxhash3_64bits_stream
+    xxhash3_64bits_stream_update
+    xxhash3_64bits_stream_digest
+    xxhash3_64bits_stream_digest_hex
 ];
 
 1;
@@ -104,6 +108,24 @@ Get an xxh64 64-bit hash from segmented data by calling xxhash64_stream_update m
         }
         return xxhash64_stream_digest($stream);
         # return xxhash64_stream_digest_hex($stream); # hex version
+    } # the resources $stream occupied will be released here.
+
+=head2 $stream = xxhash3_64bits_stream($seed)
+=head2 xxhash3_64bits_stream_update($stream, $more_data)
+=head2 $h = xxhash3_64bits_stream_digest($stream)
+=head2 $h = xxhash3_64bits_stream_digest_hex($stream)
+
+Get an xxh3 64-bit hash from segmented data by calling xxhash3_64bits_stream_update multiple times.
+
+    sub hash_a_file {
+        my($fh) = @_;
+        my $stream = xxhash3_64bits_stream(12345);
+        my $buf;
+        while( read $fh, $buf, 1024 ) {
+            xxhash3_64bits_stream_update($stream, $buf);
+        }
+        return xxhash3_64bits_stream_digest($stream);
+        # return xxhash3_64bits_stream_digest_hex($stream); # hex version
     } # the resources $stream occupied will be released here.
 
 =head1 SPEED

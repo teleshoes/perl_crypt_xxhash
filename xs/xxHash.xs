@@ -54,6 +54,16 @@ static MGVTBL canceller_xxh64_vtbl = {
     canceller_xxh64_free
 };
 
+static int
+canceller_xxh3_64bits_free (pTHX_ SV *cv, MAGIC *mg)
+{
+    XXH3_freeState((XXH3_state_t*)mg->mg_ptr);
+    return 0;
+}
+static MGVTBL canceller_xxh3_64bits_vtbl = {
+    0, 0, 0, 0,
+    canceller_xxh3_64bits_free
+};
 MODULE = Crypt::xxHash  PACKAGE = Crypt::xxHash 
 
 PROTOTYPES: DISABLE
@@ -196,3 +206,54 @@ xxhash64_stream_digest_hex(SV * state_RV)
             croak("This is not a xxh64 state variable.");
 
         mPUSHs(newSVpvf("%016" PRIx64, (uint64_t)XXH64_digest((XXH64_state_t*)mg->mg_ptr)));
+
+
+
+void
+xxhash3_64bits_stream( UV seed )
+    PPCODE:
+        XXH3_state_t * state = XXH3_createState();
+        if( !state )
+            croak("Allocate xxh3_64bits state failed.");
+        if(  XXH3_64bits_reset_withSeed(state, seed) == XXH_ERROR )
+            croak("Initialize xxh3_64bits state failed.");
+        SV *canceller = NEWSV(0, 0);
+        SvUPGRADE(canceller, SVt_PVMG);
+        sv_magicext(canceller, NULL, PERL_MAGIC_ext, &canceller_xxh3_64bits_vtbl, (const char*)state, 0);
+        mPUSHs(newRV_noinc(canceller));
+
+void
+xxhash3_64bits_stream_update(SV * state_RV, SV * data_SV)
+    PPCODE:
+        if( !SvROK(state_RV) )
+            croak("This is not a xxh3_64bits state variable.");
+        MAGIC * mg = mg_findext(SvRV(state_RV), PERL_MAGIC_ext, &canceller_xxh3_64bits_vtbl);
+        if( !mg )
+            croak("This is not a xxh3_64bits state variable.");
+        STRLEN len;
+        char * buf = SvPV(data_SV, len);
+        if( XXH3_64bits_update((XXH3_state_t*)mg->mg_ptr, buf, len) == XXH_ERROR )
+            croak("Update xxh3_64bits state failed.");
+
+void
+xxhash3_64bits_stream_digest(SV * state_RV)
+    PPCODE:
+        dXSTARG;
+        if( !SvROK(state_RV) )
+            croak("This is not a xxh3_64bits state variable.");
+        MAGIC * mg = mg_findext(SvRV(state_RV), PERL_MAGIC_ext, &canceller_xxh3_64bits_vtbl);
+        if( !mg )
+            croak("This is not a xxh3_64bits state variable.");
+
+        PUSHu((UV) XXH3_64bits_digest((XXH3_state_t*)mg->mg_ptr));
+
+void
+xxhash3_64bits_stream_digest_hex(SV * state_RV)
+    PPCODE:
+        if( !SvROK(state_RV) )
+            croak("This is not a xxh3_64bits state variable.");
+        MAGIC * mg = mg_findext(SvRV(state_RV), PERL_MAGIC_ext, &canceller_xxh3_64bits_vtbl);
+        if( !mg )
+            croak("This is not a xxh3_64bits state variable.");
+
+        mPUSHs(newSVpvf("%016" PRIx64, (uint64_t)XXH3_64bits_digest((XXH3_state_t*)mg->mg_ptr)));

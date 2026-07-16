@@ -19,6 +19,10 @@ use Crypt::xxHash qw/
 	xxhash64_stream_update
 	xxhash64_stream_digest
 	xxhash64_stream_digest_hex
+	xxhash3_64bits_stream
+	xxhash3_64bits_stream_update
+	xxhash3_64bits_stream_digest
+	xxhash3_64bits_stream_digest_hex
 /;
 
 sub testSequence;
@@ -90,6 +94,24 @@ is( xxhash64_hex("b" x 100000, 89), '01aae2582443bbf0', 'expect leading zeros' )
     my $stream = xxhash64_stream(89);
     xxhash64_stream_update($stream, "b" x 1000) for(1..100);
     is( xxhash64_stream_digest_hex($stream), '01aae2582443bbf0', 'xxh64 stream hex leading zeros' );
+}
+
+{
+    my $stream = xxhash3_64bits_stream(1123);
+    xxhash3_64bits_stream_update($stream, 'te');
+    xxhash3_64bits_stream_update($stream, 'st');
+    xxhash3_64bits_stream_update($stream, '64');
+    is( xxhash3_64bits_stream_digest($stream), uint64('855843287810803924'), 'xxh3_64bits stream' );
+}
+{
+    my $stream = xxhash3_64bits_stream(890272);
+    xxhash3_64bits_stream_update($stream, "b" x 1000) for(1..100);
+    is( xxhash3_64bits_stream_digest_hex($stream), '3bc61c8f7d2e429f', 'xxh3_64bits stream hex' );
+}
+{
+    my $stream = xxhash3_64bits_stream(88);
+    xxhash3_64bits_stream_update($stream, "b" x 1000) for(1..100);
+    is( xxhash3_64bits_stream_digest_hex($stream), '0b38c714632f7e8b', 'xxh3_64bits stream hex leading zeros' );
 }
 
 # 128 bits
