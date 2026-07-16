@@ -93,7 +93,7 @@ This hash is converted into hex string.
 =head2 $h = xxhash64_stream_digest($stream)
 =head2 $h = xxhash64_stream_digest_hex($stream)
 
-Get a 64 bit hash from segmented data by calling xxhash64_stream_update multiple times.
+Get an xxh64 64-bit hash from segmented data by calling xxhash64_stream_update multiple times.
 
     sub hash_a_file {
         my($fh) = @_;
