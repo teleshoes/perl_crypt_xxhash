@@ -67,23 +67,23 @@ This hash is converted into hex string.
 Returns a 128 bit hash which calculated by using xxHash3 algorithm.
 This hash is converted into hex string.
 
-##### $stream = xxhash3_64bits_stream($seed)
-##### xxhash3_64bits_stream_update($stream, $more_data)
-##### $h = xxhash3_64bits_stream_digest($stream)
-##### $h = xxhash3_64bits_stream_digest_hex($stream)
+##### $stream = xxhash64_stream($seed)
+##### xxhash64_stream_update($stream, $more_data)
+##### $h = xxhash64_stream_digest($stream)
+##### $h = xxhash64_stream_digest_hex($stream)
 
-Get a 64 bit hash from segmented data by calling xxhash3_64bits_stream_update multiple times.
+Get a 64 bit hash from segmented data by calling xxhash64_stream_update multiple times.
 
 ```perl
 sub hash_a_file {
     my($fh) = @_;
-    my $stream = xxhash3_64bits_stream(12345);
+    my $stream = xxhash64_stream(12345);
     my $buf;
     while( read $fh, $buf, 1024 ) {
-        xxhash3_64bits_stream_update($stream, $buf);
+        xxhash64_stream_update($stream, $buf);
     }
-    return xxhash3_64bits_stream_digest($stream);
-    # return xxhash3_64bits_stream_digest_hex($stream); # hex version
+    return xxhash64_stream_digest($stream);
+    # return xxhash64_stream_digest_hex($stream); # hex version
 } # the resources $stream occupied will be released here.
 ```
 

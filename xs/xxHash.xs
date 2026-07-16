@@ -149,7 +149,7 @@ xxhash3_128bits_hex( const char *input, int length(input), UV seed )
         RETVAL
 
 void
-xxhash3_64bits_stream( UV seed )
+xxhash64_stream( UV seed )
     PPCODE:
         XXH64_state_t * state = XXH64_createState();
         if( !state )
@@ -162,7 +162,7 @@ xxhash3_64bits_stream( UV seed )
         mPUSHs(newRV_noinc(canceller));
 
 void
-xxhash3_64bits_stream_update(SV * state_RV, SV * data_SV)
+xxhash64_stream_update(SV * state_RV, SV * data_SV)
     PPCODE:
         if( !SvROK(state_RV) )
             croak("This is not a 64bits xxHash state variable.");
@@ -175,7 +175,7 @@ xxhash3_64bits_stream_update(SV * state_RV, SV * data_SV)
             croak("Update 64bits xxHash state failed.");
 
 void
-xxhash3_64bits_stream_digest(SV * state_RV)
+xxhash64_stream_digest(SV * state_RV)
     PPCODE:
         dXSTARG;
         if( !SvROK(state_RV) )
@@ -187,7 +187,7 @@ xxhash3_64bits_stream_digest(SV * state_RV)
         PUSHu((UV) XXH64_digest((XXH64_state_t*)mg->mg_ptr));
 
 void
-xxhash3_64bits_stream_digest_hex(SV * state_RV)
+xxhash64_stream_digest_hex(SV * state_RV)
     PPCODE:
         if( !SvROK(state_RV) )
             croak("This is not a 64bits xxHash state variable.");
