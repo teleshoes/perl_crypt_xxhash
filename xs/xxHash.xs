@@ -44,14 +44,14 @@ using namespace std;
 #endif
 
 static int
-canceller_free (pTHX_ SV *cv, MAGIC *mg)
+canceller_xxh64_free (pTHX_ SV *cv, MAGIC *mg)
 {
     XXH64_freeState((XXH64_state_t*)mg->mg_ptr);
     return 0;
 }
-static MGVTBL canceller_vtbl = {
+static MGVTBL canceller_xxh64_vtbl = {
     0, 0, 0, 0,
-    canceller_free
+    canceller_xxh64_free
 };
 
 MODULE = Crypt::xxHash  PACKAGE = Crypt::xxHash 
@@ -158,7 +158,7 @@ xxhash64_stream( UV seed )
             croak("Initialize xxh64 state failed.");
         SV *canceller = NEWSV(0, 0);
         SvUPGRADE(canceller, SVt_PVMG);
-        sv_magicext(canceller, NULL, PERL_MAGIC_ext, &canceller_vtbl, (const char*)state, 0);
+        sv_magicext(canceller, NULL, PERL_MAGIC_ext, &canceller_xxh64_vtbl, (const char*)state, 0);
         mPUSHs(newRV_noinc(canceller));
 
 void
@@ -166,7 +166,7 @@ xxhash64_stream_update(SV * state_RV, SV * data_SV)
     PPCODE:
         if( !SvROK(state_RV) )
             croak("This is not an xxh64 state variable.");
-        MAGIC * mg = mg_findext(SvRV(state_RV), PERL_MAGIC_ext, &canceller_vtbl);
+        MAGIC * mg = mg_findext(SvRV(state_RV), PERL_MAGIC_ext, &canceller_xxh64_vtbl);
         if( !mg )
             croak("This is not an xxh64 state variable.");
         STRLEN len;
@@ -180,7 +180,7 @@ xxhash64_stream_digest(SV * state_RV)
         dXSTARG;
         if( !SvROK(state_RV) )
             croak("This is not an xxh64 state variable.");
-        MAGIC * mg = mg_findext(SvRV(state_RV), PERL_MAGIC_ext, &canceller_vtbl);
+        MAGIC * mg = mg_findext(SvRV(state_RV), PERL_MAGIC_ext, &canceller_xxh64_vtbl);
         if( !mg )
             croak("This is not an xxh64 state variable.");
 
@@ -191,7 +191,7 @@ xxhash64_stream_digest_hex(SV * state_RV)
     PPCODE:
         if( !SvROK(state_RV) )
             croak("This is not an xxh64 state variable.");
-        MAGIC * mg = mg_findext(SvRV(state_RV), PERL_MAGIC_ext, &canceller_vtbl);
+        MAGIC * mg = mg_findext(SvRV(state_RV), PERL_MAGIC_ext, &canceller_xxh64_vtbl);
         if( !mg )
             croak("This is not a xxh64 state variable.");
 
