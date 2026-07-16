@@ -79,17 +79,17 @@ is( xxhash64_hex("b" x 100000, 89), '01aae2582443bbf0', 'expect leading zeros' )
     xxhash64_stream_update($stream, 'te');
     xxhash64_stream_update($stream, 'st');
     xxhash64_stream_update($stream, '64');
-    is( xxhash64_stream_digest($stream), uint64('18300740539230391133'), 'uint64 streaming' );
+    is( xxhash64_stream_digest($stream), uint64('18300740539230391133'), 'xxh64 stream' );
 }
 {
     my $stream = xxhash64_stream(890272);
     xxhash64_stream_update($stream, "b" x 1000) for(1..100);
-    is( xxhash64_stream_digest_hex($stream), 'df8fee94dbf20a9d', 'uint64 streaming hex' );
+    is( xxhash64_stream_digest_hex($stream), 'df8fee94dbf20a9d', 'xxh64 stream hex' );
 }
 {
     my $stream = xxhash64_stream(89);
     xxhash64_stream_update($stream, "b" x 1000) for(1..100);
-    is( xxhash64_stream_digest_hex($stream), '01aae2582443bbf0', 'uint64 streaming hex leading zeros' );
+    is( xxhash64_stream_digest_hex($stream), '01aae2582443bbf0', 'xxh64 stream hex leading zeros' );
 }
 
 # 128 bits
